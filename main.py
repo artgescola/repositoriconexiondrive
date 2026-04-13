@@ -34,7 +34,7 @@ def create_content(data: dict):
     contenido = data["contenido_doc"]
     row = data["excel_row"]
 
-    # 📄 Crear documento en Drive
+    # 📄 Crear documento en Drive (FORZANDO uso de tu Drive)
     file_metadata = {
         "name": nombre,
         "mimeType": "application/vnd.google-apps.document",
@@ -43,7 +43,8 @@ def create_content(data: dict):
 
     file = drive_service.files().create(
         body=file_metadata,
-        fields="id"
+        fields="id",
+        supportsAllDrives=True
     ).execute()
 
     doc_id = file.get("id")
