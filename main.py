@@ -37,7 +37,7 @@ def create_content(data: dict):
     # 📄 Crear documento en Drive (FORZANDO uso de tu Drive)
     file_metadata = {
         "name": nombre,
-        "mimeType": "application/vnd.google-apps.document",
+        "mimeType": "text/plain",
         "parents": [FOLDER_ID]
     }
 
