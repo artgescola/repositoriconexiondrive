@@ -23,7 +23,7 @@ sheets_service = build("sheets", "v4", credentials=credentials)
 docs_service = build("docs", "v1", credentials=credentials)
 
 # 🔧 CONFIGURA ESTO
-SPREADSHEET_ID = "1Qnn89Oz8KR8yPc6I8lkwi_uOZTqomLJv"
+SPREADSHEET_ID = "1rXOWiOc3RbOejxs4oHQZJc3cWQxzhbMs"
 FOLDER_ID = "1xRTWRA2WrQcrzbfR3miCT4GghA-DVWzn"
 
 
