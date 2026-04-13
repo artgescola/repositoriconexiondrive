@@ -3,10 +3,12 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import os
 import json
+from io import BytesIO
+from googleapiclient.http import MediaIoBaseUpload
 
 app = FastAPI()
 
-# 🔐 Leer credenciales desde variable de entorno
+# 🔐 Credenciales
 SERVICE_ACCOUNT_INFO = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT"])
 
 SCOPES = [
@@ -20,10 +22,9 @@ credentials = service_account.Credentials.from_service_account_info(
 
 drive_service = build("drive", "v3", credentials=credentials)
 sheets_service = build("sheets", "v4", credentials=credentials)
-docs_service = build("docs", "v1", credentials=credentials)
 
 # 🔧 CONFIGURA ESTO
-SPREADSHEET_ID = "1rXOWiOc3RbOejxs4oHQZJc3cWQxzhbMs"
+SPREADSHEET_ID = "1Qnn89Oz8KR8yPc6I8lkwi_uOZTqomLJv"
 FOLDER_ID = "1xRTWRA2WrQcrzbfR3miCT4GghA-DVWzn"
 
 
@@ -34,34 +35,21 @@ def create_content(data: dict):
     contenido = data["contenido_doc"]
     row = data["excel_row"]
 
-    # 📄 Crear documento en Drive (FORZANDO uso de tu Drive)
+    # 📄 Crear archivo TXT en Drive (SOLUCIÓN AL PROBLEMA DE QUOTA)
     file_metadata = {
-        "name": nombre,
-        "mimeType": "text/plain",
+        "name": f"{nombre}.txt",
         "parents": [FOLDER_ID]
     }
 
+    media = MediaIoBaseUpload(
+        BytesIO(contenido.encode("utf-8")),
+        mimetype="text/plain"
+    )
+
     file = drive_service.files().create(
         body=file_metadata,
-        fields="id",
-        supportsAllDrives=True
-    ).execute()
-
-    doc_id = file.get("id")
-
-    # ✍️ Escribir contenido
-    docs_service.documents().batchUpdate(
-        documentId=doc_id,
-        body={
-            "requests": [
-                {
-                    "insertText": {
-                        "location": {"index": 1},
-                        "text": contenido
-                    }
-                }
-            ]
-        }
+        media_body=media,
+        fields="id"
     ).execute()
 
     # 📊 Añadir fila al Excel
